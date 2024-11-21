@@ -5,8 +5,7 @@ CREATE TABLE tags (
 CREATE TABLE ingredients (
 	ingredientID 	CHAR(10) NOT NULL PRIMARY KEY,
 	foodGroup 		VARCHAR(30),
-    name 			VARCHAR(30),
-    recipeID		CHAR(15)
+    name 			VARCHAR(30)
     );    
 CREATE TABLE user (
 	username 	VARCHAR(30) NOT NULL PRIMARY KEY,
@@ -58,3 +57,9 @@ CREATE TABLE userSavedSearches (
     search		VARCHAR(100) NOT NULL,
     FOREIGN KEY (username) REFERENCES user(username)
 	);
+CREATE TABLE recipeIngredients (
+	recipeID 		INT NOT NULL,
+    ingredientID 	CHAR(10) NOT NULL,
+    FOREIGN KEY (ingredientID) REFERENCES ingredients(ingredientID),
+	FOREIGN KEY (recipeID) REFERENCES recipes(recipeID)    
+);
