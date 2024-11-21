@@ -12,3 +12,9 @@ INSERT INTO user VALUES (
 );
 
 SELECT * FROM user;
+
+INSERT INTO tags VALUES(
+	123,
+    'Vegetarian'
+    
+);
