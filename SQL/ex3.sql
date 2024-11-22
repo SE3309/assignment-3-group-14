@@ -18,3 +18,5 @@ INSERT INTO tags VALUES(
     'Vegetarian'
     
 );
+
+SELECT * FROM tags;
