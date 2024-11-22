@@ -125,12 +125,16 @@ def insert_userSavedRecipes(n): #insert userSavedRecipes
         recipes = cursor.fetchall()
 
         for user in users: #for each user assign a recipe
-            username = user[0]  #get a user
-            recipeID = random.choice(recipes)[0] #get a recipe
+            username = user[0] 
+            recipes_per_user = random.randint(1, 10)  #random number of recipes per user
 
-            #insert the username and recipeID into userSavedRecipes
-            cursor.execute("INSERT INTO userSavedRecipes (username, recipeID) VALUES (%s, %s)", (username, recipeID))
-            db_connection.commit()
+            for _ in range(recipes_per_user): 
+                recipeID = random.choice(recipes)[0]  #randomly choose a recipe
+
+                #insert username and recipeID into userSavedRecipes
+                cursor.execute("INSERT INTO userSavedRecipes (username, recipeID) VALUES (%s, %s)", (username, recipeID))
+                db_connection.commit()
+
         print(f"Success: {n} user-saved recipes inserted.")
     
     except mysql.connector.Error as err:
@@ -143,11 +147,14 @@ def insert_userSavedSearches(n): #insert userSavedSearches
         
         for user in users: #insert a random saved search for each user
             username = user[0] 
-            search = generate_random_search_term()
+            searches_per_user = random.randint(1, 10)  
 
-            #insert username and search term into userSavedSearches
-            cursor.execute("INSERT INTO userSavedSearches (username, search) VALUES (%s, %s)", (username, search))
-            db_connection.commit()
+            for _ in range(searches_per_user):
+                search = generate_random_search_term() 
+
+                #insert username and search term into userSavedSearches
+                cursor.execute("INSERT INTO userSavedSearches (username, search) VALUES (%s, %s)", (username, search))
+                db_connection.commit()
         print(f"Success: random user-saved searches inserted.")
     
     except mysql.connector.Error as err:
