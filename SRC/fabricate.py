@@ -42,9 +42,10 @@ def insert_tags(n): #insert tags
     print("Inserting tags...")
     try:
         for tagID in range(1, n + 1):
+            tagID_str = str(tagID).zfill(10)
             tag_name = f"Tag {tagID}"  
             
-            cursor.execute("INSERT INTO tags (tagID, name) VALUES (%s, %s)", (tagID, tag_name))
+            cursor.execute("INSERT INTO tags (tagID, name) VALUES (%s, %s)", (tagID_str, tag_name))
             db_connection.commit() 
         print("Success: Tags inserted.")
     
@@ -117,6 +118,36 @@ def insert_authors(n): #insert authors
     except mysql.connector.Error as err:
         print(f"Error inserting authors: {err}")
 
+import random
+import mysql.connector
+
+def insert_recipeTags(n):
+    print("Inserting recipeTags...")
+    try:
+        cursor.execute("SELECT recipeID FROM recipes ORDER BY RAND() LIMIT %s", (n,))
+        recipes = cursor.fetchall()
+        cursor.execute("SELECT tagID FROM tags")
+        tags = [tag[0] for tag in cursor.fetchall()]
+        
+        for recipe in recipes:
+            recipeID = recipe[0]
+            num_tags = random.randint(1, 5) #choose 1-5 tags
+            selected_tags = random.sample(tags, num_tags)
+            
+            tag_data = selected_tags + [None] * (5 - num_tags) #unused columns = none
+            
+            cursor.execute("""
+                INSERT INTO recipeTags (recipeID, tag1, tag2, tag3, tag4, tag5)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (recipeID, *tag_data))
+        
+        db_connection.commit()
+        print("Recipe tags insertion complete!")
+    
+    except mysql.connector.Error as err:
+        print(f"Error inserting recipeTags: {err}")
+
+
 def insert_userSavedRecipes(n): #insert userSavedRecipes
     try:
         cursor.execute("SELECT username FROM user ORDER BY RAND() LIMIT %s", (n,)) #get 50 random users from user table
@@ -177,6 +208,7 @@ def main():
     insert_ratings(1500)
     insert_userSavedRecipes(50)
     insert_userSavedSearches(20)
+    insert_recipeTags(50)
     
     print("Data insertion complete!")
 
