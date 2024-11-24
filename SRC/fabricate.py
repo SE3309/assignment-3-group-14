@@ -1,6 +1,6 @@
 import mysql.connector
 import random
-import uuid
+import string
 
 db_connection = mysql.connector.connect( #connect to the database
     host="localhost",
@@ -117,6 +117,54 @@ def insert_authors(n): #insert authors
     except mysql.connector.Error as err:
         print(f"Error inserting authors: {err}")
 
+def insert_userSavedRecipes(n): #insert userSavedRecipes
+    try:
+        cursor.execute("SELECT username FROM user ORDER BY RAND() LIMIT %s", (n,)) #get 50 random users from user table
+        users = cursor.fetchall()
+        cursor.execute("SELECT recipeID FROM recipes") #get recipeIDs from recipes
+        recipes = cursor.fetchall()
+
+        for user in users: #for each user assign a recipe
+            username = user[0] 
+            recipes_per_user = random.randint(1, 10)  #random number of recipes per user
+
+            for _ in range(recipes_per_user): 
+                recipeID = random.choice(recipes)[0]  #randomly choose a recipe
+
+                #insert username and recipeID into userSavedRecipes
+                cursor.execute("INSERT INTO userSavedRecipes (username, recipeID) VALUES (%s, %s)", (username, recipeID))
+                db_connection.commit()
+
+        print(f"Success: {n} user-saved recipes inserted.")
+    
+    except mysql.connector.Error as err:
+        print(f"Error inserting userSavedRecipes: {err}")
+
+def insert_userSavedSearches(n): #insert userSavedSearches
+    try:
+        cursor.execute("SELECT username FROM user ORDER BY RAND() LIMIT %s", (n,)) 
+        users = cursor.fetchall()
+        
+        for user in users: #insert a random saved search for each user
+            username = user[0] 
+            searches_per_user = random.randint(1, 10)  
+
+            for _ in range(searches_per_user):
+                search = generate_random_search_term() 
+
+                #insert username and search term into userSavedSearches
+                cursor.execute("INSERT INTO userSavedSearches (username, search) VALUES (%s, %s)", (username, search))
+                db_connection.commit()
+        print(f"Success: random user-saved searches inserted.")
+    
+    except mysql.connector.Error as err:
+        print(f"Error inserting userSavedSearches: {err}")
+
+def generate_random_search_term():
+    length = random.randint(1, 100)  #random length between 1 and 100
+    random_string = ''.join(random.choices(string.ascii_lowercase + string.digits + " ", k=length))
+    return random_string
+
 #main function
 def main():
     print("Starting data insertion!")
@@ -127,6 +175,8 @@ def main():
     insert_authors(10)
     insert_ingredients(200)
     insert_ratings(1500)
+    insert_userSavedRecipes(50)
+    insert_userSavedSearches(20)
     
     print("Data insertion complete!")
 
